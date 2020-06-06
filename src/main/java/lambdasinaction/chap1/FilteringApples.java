@@ -72,7 +72,7 @@ public class FilteringApples{
     }
 
     // JDK 8 版本写法
-    // 操作函数
+    // 行为操作函数
 
     /**
      * @param inventory 苹果存货清单

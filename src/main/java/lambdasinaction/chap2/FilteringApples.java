@@ -2,12 +2,20 @@ package lambdasinaction.chap2;
 
 import java.util.*;
 
+/**
+ * Chapter 2: Passing code with behavior parameterization / 传递具有参数化行为的代码
+ */
 public class FilteringApples{
 
 	public static void main(String ... args){
 
-		List<Apple> inventory = Arrays.asList(new Apple(80,"green"), new Apple(155, "green"), new Apple(120, "red"));	
+		List<Apple> inventory = Arrays.asList(
+				new Apple(80,"green"),
+				new Apple(155, "green"),
+				new Apple(120, "red")
+		);
 
+		// JDK 7 之前版本写法
 		// [Apple{color='green', weight=80}, Apple{color='green', weight=155}]
 		List<Apple> greenApples = filterApplesByColor(inventory, "green");
 		System.out.println(greenApples);
@@ -28,18 +36,20 @@ public class FilteringApples{
 		List<Apple> redAndHeavyApples = filter(inventory, new AppleRedAndHeavyPredicate());
 		System.out.println(redAndHeavyApples);
 
+		// 匿名实现类对象(JDK 7 之前版本写法)
 		// [Apple{color='red', weight=120}]
 		List<Apple> redApples2 = filter(inventory, new ApplePredicate() {
 			public boolean test(Apple a){
-				return a.getColor().equals("red"); 
+				return "red".equals(a.getColor());
 			}
 		});
 		System.out.println(redApples2);
-
 	}
 
+	// JDK 7 之前版本写法
+
 	public static List<Apple> filterGreenApples(List<Apple> inventory){
-		List<Apple> result = new ArrayList<>();
+		List<Apple> result = new ArrayList<>(inventory.size());
 		for(Apple apple: inventory){
 			if("green".equals(apple.getColor())){
 				result.add(apple);
@@ -49,7 +59,7 @@ public class FilteringApples{
 	}
 
 	public static List<Apple> filterApplesByColor(List<Apple> inventory, String color){
-		List<Apple> result = new ArrayList<>();
+		List<Apple> result = new ArrayList<>(inventory.size());
 		for(Apple apple: inventory){
 			if(apple.getColor().equals(color)){
 				result.add(apple);
@@ -59,7 +69,7 @@ public class FilteringApples{
 	}
 
 	public static List<Apple> filterApplesByWeight(List<Apple> inventory, int weight){
-		List<Apple> result = new ArrayList<>();
+		List<Apple> result = new ArrayList<>(inventory.size());
 		for(Apple apple: inventory){
 			if(apple.getWeight() > weight){
 				result.add(apple);
@@ -70,7 +80,7 @@ public class FilteringApples{
 
 
 	public static List<Apple> filter(List<Apple> inventory, ApplePredicate p){
-		List<Apple> result = new ArrayList<>();
+		List<Apple> result = new ArrayList<>(inventory.size());
 		for(Apple apple : inventory){
 			if(p.test(apple)){
 				result.add(apple);
@@ -80,8 +90,8 @@ public class FilteringApples{
 	}       
 
 	public static class Apple {
-		private int weight = 0;
-		private String color = "";
+		private final int weight;
+		private final String color;
 
 		public Apple(int weight, String color){
 			this.weight = weight;
@@ -92,16 +102,8 @@ public class FilteringApples{
 			return weight;
 		}
 
-		public void setWeight(Integer weight) {
-			this.weight = weight;
-		}
-
 		public String getColor() {
 			return color;
-		}
-
-		public void setColor(String color) {
-			this.color = color;
 		}
 
 		public String toString() {
@@ -112,9 +114,18 @@ public class FilteringApples{
 		}
 	}
 
+	// 函数式接口
+
+	/**
+	 * 具体类型的过滤操作函数接口。
+	 * @see java.util.function.Predicate
+	 */
+	@FunctionalInterface
 	interface ApplePredicate{
-		public boolean test(Apple a);
+		boolean test(Apple a);
 	}
+
+	// 谓词函数对象类
 
 	static class AppleWeightPredicate implements ApplePredicate{
 		public boolean test(Apple apple){
